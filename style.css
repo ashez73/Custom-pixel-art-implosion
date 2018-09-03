@@ -1,0 +1,9 @@
+#wrapper{
+  position: relative;
+  min-height: 150px;
+}
+.proper {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+}
