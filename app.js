@@ -75,7 +75,7 @@ let model = {
  3. move the vector up to the edge of closest viewport border
   */
   determineVectors: (y, x, sideA, sideB, width, height, counter) => {
-    let quarter, sideC, sinBeta, cosBeta, myfinalCoords, finalCoords, finalVector, finalCoordX, finalCoordY, final, deltaA, deltaB, deltaC;
+    let quarter, sideC, sinBeta, cosBeta, myfinalCoords, finalCoords, finalVector, finalCoordX, finalCoordY, xfinal, yfinal, deltaA, deltaB, deltaC;
     let quarterPlace = () => {
       if (sideA <= 0 && sideB <= 0) {
         return 1;
@@ -88,24 +88,51 @@ let model = {
       };
     };
     myfinalCoords = () => {
+      function normalizeToWidth() {
+        quarter === 1 || quarter === 2 ? deltaB2 = height / 2 - sideB - deltaB : deltaB2 = sideB + deltaB - height / 2;
+        if (height / 2 - sideB - deltaB < 1 || height / 2 + sideB + deltaB > height) {
+          deltaC2 = Math.abs(deltaB2 / sinBeta);
+          deltaA2 = Math.floor(cosBeta * deltaC2);
+          //console.log(deltaA2);
+          quarter === 1 || quarter === 3 ? xfinal = Math.floor(1 + deltaA2) : xfinal = Math.floor(width - deltaA2);
+          quarter === 1 || quarter === 2 ? yfinal = 1 : yfinal = height;
+        }
+      };
+
+      function normalizeToHeight() {
+        quarter === 1 || quarter === 3 ? deltaA2 = width / 2 - sideA - deltaA : deltaA2 = sideA + deltaA - width / 2;
+        if (width / 2 - sideA - deltaA < 1 || width / 2 + sideA + deltaB > width) {
+          deltaC2 = deltaA2 / sinBeta;
+          deltaB2 = Math.floor(cosBeta * deltaC2);
+          quarter === 1 || quarter === 3 ? xfinal = 1: xfinal = width;
+          quarter === 1 || quarter === 2 ? yfinal = deltaB2 : yfinal = height-deltaB2;
+        }
+      }
+
+      function calculateCoords() {
+        quarter ===1 ||quarter ===3? xfinal = width/2-sideA-deltaA: xfinal = width / 2 + sideA + deltaA;
+        quarter ===1 ||quarter ===2? yfinal =1 :y = height;
+      }
 
       getFinalCoords = (aorb) => {
+        //
+        if (quarter===1){
+        aorb ? model.pixelData[counter] ={
+          xfinal: width/2-sideA-deltaA,
+          yfinal:1
+        } : normalizeToWidth();
+        //
+      }
 
         if (quarter === 1) {
-          console.log(counter);
           aorb ? model.pixelData[counter] = {
             xfinal: width / 2 - sideA - deltaA,
             yfinal: 1
-          } : model.pixelData[counter] = {
-            xfinal: 1,
-            yfinal: height / 2 - sideB - deltaB
-          };
-          console.log(model.pixelData[counter]);
-        }
-        // console.log (`1/2 h: ${height / 2} - sideB: ${sideB} - deltaB : ${deltaB}`);
-        else if (quarter === 2) {
+          } : normalizeToWidth();
+          //console.log(model.pixelData[counter]);
+        } else if (quarter === 2) {
 
-          console.log(counter);
+          //console.log(counter);
           aorb ? model.pixelData[counter] = {
             xfinal: width / 2 + sideA + deltaA,
             yfinal: 1
@@ -113,9 +140,9 @@ let model = {
             xfinal: width,
             yfinal: height / 2 - sideB - deltaB
           };
-          console.log(model.pixelData[counter]);
+          // console.log(model.pixelData[counter]);
         } else if (quarter === 3) {
-          console.log(counter);
+          // console.log(counter);
           aorb ? model.pixelData[counter] = {
             xfinal: width / 2 - sideA - deltaA,
             yfinal: height
@@ -123,18 +150,19 @@ let model = {
             xfinal: 1,
             yfinal: height / 2 + sideB + deltaB
           };
-          console.log(model.pixelData[counter]);
+          // console.log(model.pixelData[counter]);
         }
         //  console.log (`1/2 h: ${height / 2} - sideB: ${sideB} - deltaB : ${deltaB}`);
         else {
-          aorb ? finalCoords = {
-            ly: height,
-            lx: width / 2 + sideA + deltaA
-          } : {
-            ly: height / 2 + deltaB + sideB,
-            lx: width
+          // console.log(counter);
+          aorb ? model.pixelData[counter] = {
+            xfinal: width / 2 + sideA + deltaA,
+            yfinal: height
+          } : model.pixelData[counter] = {
+            xfinal: width,
+            yfinal: height / 2 + sideB + deltaB
           };
-          // console.log (`1/2 h: ${height / 2} - sideB: ${sideB} - deltaB : ${deltaB}`);
+          // console.log(model.pixelData[counter]);
         }
         //console.log (quarter, aorb, finalCoords);
         //console.log (aorb, finalCoords);
@@ -154,7 +182,7 @@ let model = {
         deltaC = Math.floor(deltaA / cosBeta);
         deltaB = Math.floor(sinBeta * deltaC);
         // console.log (deltaB);
-        // final = getFinalCoords(false);
+        final = getFinalCoords(false);
         // console.log (quarter, width, height, deltaA, deltaB, deltaC, sideA, sideB);
       };
       // console.log(deltaA, deltaB, deltaC,quarter);
