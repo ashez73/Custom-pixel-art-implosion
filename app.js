@@ -63,7 +63,7 @@ model = {
           myObject = new model.Pixel(coordX, coordY, vector.xfinal, vector.yfinal, counter);
           this.pixelData.push(myObject);
           address = `<div id = "${counter}" class="proper"><data posX = ${coordX} posY =${coordY} ></data></div>`;
-          document.querySelector('#wrapper').insertAdjacentHTML('beforeend', address);
+          document.querySelector('#wrapper').insertAdjacentHTML('afterbegin', address);
           view.renderTarget(counter, coordX, coordY);
          //view.renderTarget(counter, vector.xfinal, vector.yfinal);
         }
@@ -135,7 +135,10 @@ view = {
     myElem = document.getElementById(element);
     myElem.style.left = `${Math.floor(xoff)}px`;
     myElem.style.top = `${Math.floor(yoff)}px`;
-    myElem.style.backgroundColor = "#ff0000";
+    myElem.style.backgroundColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
+    let cl = Math.random()*200+20;
+    myElem.style.backgroundColor = `rgb(${cl},${cl},${cl})`;
+    myElem.style.zIndex = elem;
   },
 };
 
@@ -147,15 +150,29 @@ controller = {
     },
     play: function () {
       let instance;
+      var tl = new TimelineMax();
+      tl.add(TweenLite.from(".text",5, {
+        ease: Expo.easeIn,
+        scale: 1,
+        opacity: 0
+      }) ) ;
       model.pixelData.map(pixel => {
           instance = document.getElementById(pixel.id.toString());
-          TweenLite.from(instance, this.myRandomizer(2,50), {
-            ease: Bounce.easeOut,
-            scale: 7,
+         
+          tl.add(TweenLite.from(instance, this.myRandomizer(3,50), {
+            ease:Bounce.easeOut,
+            scale: this.myRandomizer(12,75),
+            scale: 0.1,
             opacity: 0,
             top: Math.floor(pixel.yfinal) + "px",
-            left: Math.floor(pixel.xfinal) + "px"
-          })     
+            left: Math.floor(pixel.xfinal) + "px",
+            backgroundColor: "#fff",
+            boxShadow:"none",
+            borderRadius:0,
+            onComplete: function(){console.log('done');},
+           
+            //backgroundColor: `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`
+          }),0 )  
       })
     }
 };
