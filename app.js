@@ -24,9 +24,9 @@ model = {
     [1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]
   ],
-  Pixel: function (x, y, xfinal, yfinal,id) {
-    this.id =id,
-    this.x = x;
+  Pixel: function (x, y, xfinal, yfinal, id) {
+    this.id = id,
+      this.x = x;
     this.y = y;
     this.xfinal = xfinal;
     this.yfinal = yfinal;
@@ -65,7 +65,6 @@ model = {
           address = `<div id = "${counter}" class="proper"><data posX = ${coordX} posY =${coordY} ></data></div>`;
           document.querySelector('#wrapper').insertAdjacentHTML('afterbegin', address);
           view.renderTarget(counter, coordX, coordY);
-         //view.renderTarget(counter, vector.xfinal, vector.yfinal);
         }
       }
     }
@@ -135,46 +134,51 @@ view = {
     myElem = document.getElementById(element);
     myElem.style.left = `${Math.floor(xoff)}px`;
     myElem.style.top = `${Math.floor(yoff)}px`;
-    myElem.style.backgroundColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-    let cl = Math.random()*200+20;
+    let cl = Math.random() * 200 + 20;
     myElem.style.backgroundColor = `rgb(${cl},${cl},${cl})`;
     myElem.style.zIndex = elem;
   },
 };
 
 controller = {
-    init: model.initializeAndCalculate(),
-    myRandomizer: function(trans, ampli){
-      let speed = (Math.random()*ampli)+1;
-      return trans + ((trans*speed)/100); 
-    },
-    play: function () {
-      let instance;
-      var tl = new TimelineMax();
-      tl.add(TweenLite.from(".text",5, {
-        ease: Expo.easeIn,
-        scale: 1,
-        opacity: 0
-      }) ) ;
-      model.pixelData.map(pixel => {
-          instance = document.getElementById(pixel.id.toString());
-         
-          tl.add(TweenLite.from(instance, this.myRandomizer(3,50), {
-            ease:Bounce.easeOut,
-            scale: this.myRandomizer(12,75),
-            scale: 0.1,
-            opacity: 0,
-            top: Math.floor(pixel.yfinal) + "px",
-            left: Math.floor(pixel.xfinal) + "px",
-            backgroundColor: "#fff",
-            boxShadow:"none",
-            borderRadius:0,
-            onComplete: function(){console.log('done');},
-           
-            //backgroundColor: `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`
-          }),0 )  
-      })
-    }
-};
-    controller.init;
+  init: model.initializeAndCalculate(),
+  restart: function () {
+    document.getElementsByClassName('proper').remove;
+    document.getElementsByTagName('button')[0].removeEventListener("click", controller.restart);
+   // controller.init;
     controller.play();
+  },
+  initListeners: function () {
+    document.getElementsByTagName('button')[0].addEventListener("click", controller.restart);
+  },
+  myRandomizer: function (trans, ampli) {
+    let speed = (Math.random() * ampli) + 1;
+    return trans + ((trans * speed) / 100);
+  },
+  play: function () {
+    let instance;
+    const tl = new TimelineMax();
+    tl.add(TweenLite.from(".text", 5, {
+      ease: Expo.easeIn,
+      scale: 1,
+      opacity: 0,
+      onComplete: this.initListeners
+    }));
+    model.pixelData.map(pixel => {
+      instance = document.getElementById(pixel.id.toString());
+      tl.add(TweenLite.from(instance, this.myRandomizer(3, 50), {
+        ease: Bounce.easeOut,
+        scale: this.myRandomizer(12, 75),
+        scale: 0.1,
+        opacity: 0,
+        top: Math.floor(pixel.yfinal) + "px",
+        left: Math.floor(pixel.xfinal) + "px",
+        backgroundColor: "#fff",
+        boxShadow: "none",
+        borderRadius: 0,
+      }), 0)
+    });
+  }
+};
+controller.init;
+controller.play();
