@@ -113,7 +113,7 @@ function animation(finalScale) {
       quarter = quarterPlace();
       sideA = Math.abs(sideA);
       sideB = Math.abs(sideB);
-      sideC = Math.sqrt(Math.pow(sideA) + Math.pow(sideB));
+      sideC = Math.sqrt(Math.pow(sideA,2) + Math.pow(sideB,2));
       sinBeta = sideB >= sideA ? sideA / sideC : sideB / sideC;
       cosBeta = sideB >= sideA ? sideB / sideC : sideA / sideC;
       return normalizeToAspect();
